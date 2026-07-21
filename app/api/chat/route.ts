@@ -23,8 +23,6 @@ How to behave:
 type Block = { type: string; [key: string]: any };
 type ChatMessage = { role: "user" | "assistant"; content: string | Block[] };
 
-// ---------- Anthropic-shaped canonical history <-> Gemini REST format ----------
-
 function jsonSchemaTypeToGemini(t: string): string {
   return String(t).toUpperCase();
 }
@@ -63,7 +61,6 @@ function toGeminiContents(messages: ChatMessage[]) {
       if (typeof m.content === "string") {
         contents.push({ role: "user", parts: [{ text: m.content }] });
       } else {
-        // tool_result turn
         const parts = (m.content as Block[]).map((b) => {
           const name = idToName.get(b.tool_use_id) ?? "unknown_tool";
           let responseObj: any;
@@ -116,8 +113,6 @@ export async function POST(req: NextRequest) {
 
     const messages: ChatMessage[] = [...incomingMessages];
 
-    // Tool-use loop: keep calling Gemini, executing any functionCall parts,
-    // feeding results back, until Gemini responds with plain text only.
     for (let turn = 0; turn < 8; turn++) {
       const res = await fetch(GEMINI_URL(apiKey), {
         method: "POST",
@@ -164,8 +159,6 @@ export async function POST(req: NextRequest) {
       messages.push({ role: "assistant", content: assistantBlocks });
 
       if (functionCalls.length === 0) {
-        // Final answer — return the whole updated history so the client
-        // can render it and persist it for the next turn.
         return NextResponse.json({ messages });
       }
 

@@ -72,6 +72,7 @@ export default function Page() {
       <div className="header">
         <h1>Skylark BI Agent</h1>
         <p>Ask founder-level questions about pipeline, revenue, and operations — live from monday.com.</p>
+        <div className="byline">Yashas R · 3rd Sem MCA, Jain University · USN 25MCAR0042</div>
       </div>
 
       <div className="messages" ref={scrollRef}>
@@ -84,14 +85,13 @@ export default function Page() {
 
         {messages.map((m, i) => {
           if (m.role === "user") {
-            if (typeof m.content !== "string") return null; // tool_result turn, not a human message
+            if (typeof m.content !== "string") return null;
             return (
               <div className="msg user" key={i}>
                 {m.content}
               </div>
             );
           }
-          // assistant message: array of blocks
           const blocks = m.content as Block[];
           const textBlocks = blocks.filter((b) => b.type === "text");
           const toolBlocks = blocks.filter((b) => b.type === "tool_use");

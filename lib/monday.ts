@@ -1,12 +1,3 @@
-// monday.com GraphQL client.
-//
-// Design note: we never hardcode column IDs. Every board's schema (column
-// id -> title -> type) is fetched live and cached in-memory per server
-// instance, then used to translate monday's opaque column IDs into the
-// human-readable field names the rest of the app (and the LLM) works with.
-// This means the agent keeps working even if columns are re-ordered,
-// renamed slightly, or the board is re-imported.
-
 const MONDAY_API_URL = "https://api.monday.com/v2";
 const API_VERSION = "2024-10";
 
@@ -19,7 +10,6 @@ export type MondayColumn = {
 export type MondayItem = {
   id: string;
   name: string;
-  // Cleaned, title-keyed map of column values (raw text as monday renders it)
   fields: Record<string, string>;
 };
 
@@ -28,7 +18,7 @@ type SchemaCache = {
 };
 
 const schemaCache: SchemaCache = {};
-const SCHEMA_TTL_MS = 5 * 60 * 1000; // 5 min — boards rarely change columns mid-session
+const SCHEMA_TTL_MS = 5 * 60 * 1000;
 
 function getToken(): string {
   const token = process.env.MONDAY_API_TOKEN;
@@ -52,7 +42,6 @@ async function mondayGraphQL<T>(
       "API-Version": API_VERSION,
     },
     body: JSON.stringify({ query, variables }),
-    // monday data changes; don't let Next.js cache this route's fetches
     cache: "no-store",
   });
 
@@ -108,12 +97,6 @@ export async function getBoardSchema(boardId: string): Promise<MondayColumn[]> {
   return columns;
 }
 
-/**
- * Fetches every item on a board, fully paginated, and maps each item's
- * column values from opaque column IDs to human-readable column titles
- * (matching the original CSV header names as closely as monday preserved
- * them at import time).
- */
 export async function getBoardItems(boardId: string): Promise<MondayItem[]> {
   const columns = await getBoardSchema(boardId);
   const idToTitle = new Map(columns.map((c) => [c.id, c.title]));
@@ -191,7 +174,6 @@ export async function getBoardItems(boardId: string): Promise<MondayItem[]> {
 
     cursor = page.cursor;
 
-    // Safety valve against runaway pagination loops
     if (items.length > 20000) break;
   }
 

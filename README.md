@@ -2,7 +2,7 @@
 
 A conversational business-intelligence agent that answers founder-level
 questions by querying two monday.com boards (Work Orders + Deals) live —
-no hardcoded data. See `DECISION_LOG.md` for assumptions and trade-offs.
+no hardcoded data. See `DECISION_LOG.docx` for assumptions and trade-offs.
 
 ## Architecture
 
@@ -118,13 +118,13 @@ unreliable fields) alongside the answer rather than silently dropping them.
 
 ```
 app/
-  page.tsx            # chat UI
+  page.tsx             chat UI
   layout.tsx, globals.css
-  api/chat/route.ts    # Claude tool-use loop
+  api/chat/route.ts    Gemini tool-use loop
 lib/
-  monday.ts           # GraphQL client + dynamic schema mapping
-  clean.ts            # normalization rules (documented per-function)
-  tools.ts            # fetch/clean/filter/aggregate + leadership update
-  dispatch.ts          # tool schemas + dispatcher
-DECISION_LOG.md
+  monday.ts            GraphQL client + dynamic schema mapping
+  clean.ts             normalization rules
+  tools.ts             fetch/clean/filter/aggregate + leadership update
+  dispatch.ts          tool schemas + dispatcher
+DECISION_LOG.docx
 ```

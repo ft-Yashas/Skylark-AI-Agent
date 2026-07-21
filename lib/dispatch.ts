@@ -9,8 +9,6 @@ import {
   CleanDeal,
 } from "./tools";
 
-// ---------- Tool definitions given to Claude ----------
-
 export const TOOLS = [
   {
     name: "get_work_orders",
@@ -141,8 +139,6 @@ export const TOOLS = [
     input_schema: { type: "object" as const, properties: {} },
   },
 ];
-
-// ---------- Dispatcher ----------
 
 const WO_METRIC: Record<string, (w: CleanWorkOrder) => number | null> = {
   count: () => 1,

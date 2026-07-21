@@ -10,8 +10,6 @@ import {
   looksLikeHeaderRow,
 } from "./clean";
 
-// ---------- Cleaned record shapes ----------
-
 export type CleanWorkOrder = {
   itemId: string;
   dealNameMasked: string;
@@ -58,22 +56,12 @@ export type CleanDeal = {
 
 export type DataQualityNote = string;
 
-/**
- * Looks up a field by title, tolerating the exact-title variance observed
- * across different monday.com imports of the same CSV (e.g. some imports
- * mapped "Masked Deal value" onto a pre-existing generic "Deal Value"
- * column instead of creating a new one titled after the CSV header;
- * "Client Code" vs "Client code" differ only in casing). Tries each
- * candidate title in order and returns the first one present on the item.
- */
 function pick(fields: Record<string, string>, ...candidates: string[]): string | undefined {
   for (const c of candidates) {
     if (fields[c] !== undefined) return fields[c];
   }
   return undefined;
 }
-
-// ---------- Fetch + clean ----------
 
 let workOrdersCache: { data: CleanWorkOrder[]; notes: DataQualityNote[] } | null = null;
 let dealsCache: { data: CleanDeal[]; notes: DataQualityNote[] } | null = null;
@@ -228,8 +216,6 @@ export async function getCleanDeals(): Promise<{
   return dealsCache;
 }
 
-// ---------- Filtering ----------
-
 export type WorkOrderFilter = {
   sector?: string;
   executionStatus?: string;
@@ -297,8 +283,6 @@ export function filterDeals(data: CleanDeal[], filter: DealFilter): CleanDeal[] 
   });
 }
 
-// ---------- Aggregation (done in code, never left to the LLM to sum) ----------
-
 export function aggregateBy<T>(
   data: T[],
   groupByFn: (row: T) => string,
@@ -330,8 +314,6 @@ export function aggregateBy<T>(
     }))
     .sort((a, b) => b.sum - a.sum);
 }
-
-// ---------- Leadership update ----------
 
 export async function generateLeadershipUpdate(): Promise<string> {
   const [wo, deals] = await Promise.all([getCleanWorkOrders(), getCleanDeals()]);
