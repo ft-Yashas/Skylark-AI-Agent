@@ -70,8 +70,7 @@ export default function Page() {
   return (
     <div className="app">
       <div className="header">
-        <h1>Skylark BI Agent</h1>
-        <p>Ask founder-level questions about pipeline, revenue, and operations — live from monday.com.</p>
+        <h1>Skylark Interview AI Agent</h1>
         <div className="byline">Yashas R · 3rd Sem MCA, Jain University · USN 25MCAR0042</div>
       </div>
 
